@@ -22,6 +22,8 @@ import com.google.firestore.v1.ArrayValue;
 import com.google.firestore.v1.MapValue;
 import com.google.firestore.v1.Value;
 import com.google.protobuf.NullValue;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -136,6 +138,9 @@ class UserDataConverter {
     } else if (sanitizedObject instanceof Timestamp) {
       Timestamp timestamp = (Timestamp) sanitizedObject;
       return Value.newBuilder().setTimestampValue(timestamp.toProto()).build();
+    } else if (sanitizedObject instanceof Instant) {
+      Instant timestamp = (Instant) sanitizedObject;
+      return Value.newBuilder().setTimestampValue(InstantUtils.toProto(timestamp)).build();
     } else if (sanitizedObject instanceof List) {
       ArrayValue.Builder res = ArrayValue.newBuilder();
       int i = 0;
@@ -197,7 +202,7 @@ class UserDataConverter {
       case DOUBLE_VALUE:
         return v.getDoubleValue();
       case TIMESTAMP_VALUE:
-        return Timestamp.fromProto(v.getTimestampValue());
+        return InstantUtils.fromProto(v.getTimestampValue());
       case STRING_VALUE:
         return v.getStringValue();
       case BYTES_VALUE:
